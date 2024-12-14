@@ -5,8 +5,10 @@ services:
     image: postgres:16.0-bookworm
     container_name: fullstack-postgres
     environment:
-      POSTGRES_USER: localadmin
-      POSTGRES_PASSWORD: localpassword
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
     ports:
       - "5432:5432"
     volumes:
