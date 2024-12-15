@@ -15,10 +15,16 @@ app.use('/api/users', usersRouter)
 
 app.use((err, req, res, next) => {
   if (err.name === 'SequelizeValidationError') {
-    res.status(403).json({ 
-      error: 'Failed to validate data',
-      validationErrors: err.message
-    });
+    if (err.message === 'Validation error: Validation isEmail on username failed') {
+      res.status(403).json({ 
+        error: 'Username has to be a valid email.',
+      });
+    } else {
+      res.status(403).json({ 
+        error: 'Failed to validate data',
+        validationErrors: err.message
+      });
+    }
   } else {
     console.error(err);
     res.status(500).json({ error: 'Whoopsie' });
