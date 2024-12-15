@@ -32,16 +32,16 @@ router.post('/', tokenExtractor, async (req, res) => {
   return res.json(blog)  
 })
   
-router.delete('/:id', async (req, res) => {
-  const removeBlog = await Blog.destroy({
-  where: {
-      id: req.params.id
+router.delete('/:id', tokenExtractor, async (req, res) => {
+  const blogToRemove = await Blog.findByPk(req.params.id)
+  if (!blogToRemove) {
+    return res.status(404).json({ message: `Blog with id ${req.params.id} not found` })
   }
-  })
-    if (removeBlog) {
+  if (blogToRemove.userId === req.decodedToken.id) {
+    await blogToRemove.destroy()
     return res.json({ message: `Blog with id ${req.params.id} was deleted` })
   } else {
-    return res.status(404).json({ message: `Blog with id ${req.params.id} not found` })
+    return res.status(403).json({ message: 'Not authorized' });
   }
 })
 
