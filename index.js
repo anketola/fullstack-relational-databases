@@ -23,10 +23,18 @@ app.use((err, req, res, next) => {
       res.status(403).json({ 
         error: 'Username has to be a valid email.',
       });
+    } else if (err.message === 'Validation error: Validation min on year failed') {
+      res.status(403).json({ 
+        error: 'Blog year has to be 1991 or higher',
+      });
+    } else if (err.message === 'Validation error: Validation max on year failed') {
+      res.status(403).json({ 
+        error: 'Blog year can be by latest the current year',
+      });
     } else {
       res.status(403).json({ 
         error: 'Failed to validate data',
-        validationErrors: err.message
+        validationErrors: err.message,
       });
     }
   } else {
