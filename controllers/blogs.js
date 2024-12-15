@@ -8,13 +8,9 @@ router.get('/', async (req, res) => {
 })
   
 router.post('/', async (req, res) => {
-  console.log(req.body)
-  try {
-      const blog = await Blog.create(req.body)
-      return res.json(blog)
-  } catch(error) {
-      return res.status(400).json({ error })
-  }
+  console.log(req.body) 
+  const blog = await Blog.create(req.body)
+  return res.json(blog)  
 })
   
 router.delete('/:id', async (req, res) => {
