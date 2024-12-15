@@ -16,14 +16,13 @@ router.get('/:id', async (req, res) => {
     include: {
       model: Blog,
       as: 'userReadings',
-      attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+      attributes: ['id', 'title', 'author', 'url', 'likes', 'year'],
       through: {
-        attributes: []
-      }
+        attributes: ['id', 'read'],
+      },
     },
-    
-  })
-  res.json(userData)
+  });
+  res.json(userData);
 })
 
 router.post('/', async (req, res) => {  
