@@ -2,6 +2,7 @@ const router = require('express').Router()
 const { Op } = require('sequelize')
 const { Blog, User } = require('../models')
 const { tokenExtractor } = require('../util/tokenExtractor')
+const { userAccountActive, userHasSession } = require('../util/authUtils')
 
 router.get('/', async (req, res) => {
   const where = {}
@@ -36,13 +37,25 @@ router.get('/', async (req, res) => {
 })
   
 router.post('/', tokenExtractor, async (req, res) => {
-  console.log(req.body)
+  console.log(req.body)  
+  const isActive = await userAccountActive(req.decodedToken.id)
+  if (!isActive) {
+    return res.status(403).json({ message: 'The account has been disabled'})
+  }
+  const session = await userHasSession(req.decodedToken.id, req.token)
+  if (!session) {
+    return res.status(401).json({ message: 'Invalid session or token'})
+  }
   const user = await User.findByPk(req.decodedToken.id)
   const blog = await Blog.create({...req.body, userId: user.id})  
   return res.json(blog)  
 })
   
 router.delete('/:id', tokenExtractor, async (req, res) => {
+  const isActive = await userAccountActive(req.decodedToken.id)
+  if (!isActive) {
+    return res.status(403).json({ message: 'The account has been disabled'})
+  }
   const blogToRemove = await Blog.findByPk(req.params.id)
   if (!blogToRemove) {
     return res.status(404).json({ message: `Blog with id ${req.params.id} not found` })
